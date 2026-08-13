@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name">IntentDemo</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Login</string>
+
+    <string name="label_username">Username</string>
+    <string name="label_password">Password</string>
+
+    <string name="username_hint">Enter Username</string>
+    <string name="password_hint">Enter Password</string>
+
+    <string name="login_button_text">Login</string>
+
+    <!-- Validation -->
+    <string name="username_required">Username is required</string>
+    <string name="password_required">Password is required</string>
+    <string name="invalid_credentials">Invalid username or password</string>
+
+    <!-- Login Result -->
+    <string name="login_success">Login Successful</string>
+    <string name="login_failed">Login Failed</string>
+
+    <!-- Message Screen -->
+    <string name="tv_message_default">Message</string>
+    <string name="btn_ok">OK</string>
+
+    <!-- Main Page -->
+    <string name="main_page_title">Main Activity Page</string>
+
+    <string name="btn_contacts">Open Contacts</string>
+    <string name="btn_specific_contact">Open Specific Contact</string>
+    <string name="btn_dial">Open Dialer</string>
+    <string name="btn_camera">Open Camera</string>
+    <string name="btn_browser">Open Browser</string>
+    <string name="btn_logout">Logout</string>
+
+    <!-- Intent Errors -->
+    <string name="contacts_not_found">Contacts application not found.</string>
+    <string name="dialer_not_found">Dialer application not found.</string>
+    <string name="camera_not_found">Camera application not found.</string>
+    <string name="browser_not_found">Browser application not found.</string>
+
+    <string name="btn_start_service">Start Service</string>
+    <string name="btn_stop_service">Stop Service</string>
+
+    <string name="btn_start_music">Start Music</string>
+    <string name="btn_stop_music">Stop Music</string>
+    <string name="btn_download">Background Downloader</string>
+
+</resources>
