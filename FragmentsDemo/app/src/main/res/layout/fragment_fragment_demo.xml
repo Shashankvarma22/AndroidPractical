@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fragment Manager Demo"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <Button
+                android:id="@+id/btnAddFragment"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ADD FRAGMENT" />
+
+            <Spinner
+                android:id="@+id/spinnerFragments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fragment Display Area:"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/demo_child_container"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="#e0e0e0" />
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Status: Waiting for action"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/tvBackstackCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Backstack Count: 0" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="32dp" />
+
+        <Button
+            android:id="@+id/btnBackToDashboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="BACK TO DASHBOARD"
+            android:layout_marginTop="16dp"
+            app:backgroundTint="@color/purple_500" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

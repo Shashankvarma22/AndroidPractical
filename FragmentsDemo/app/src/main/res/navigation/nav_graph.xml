@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.fragmentsdemo.LoginFragment"
+        android:label="@string/title_login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_nav_home"
+            app:destination="@id/nav_home"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.fragmentsdemo.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_dashboard"
+        android:name="com.example.fragmentsdemo.DashboardFragment"
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_dashboard">
+        <action
+            android:id="@+id/action_nav_dashboard_to_systemInfoFragment"
+            app:destination="@id/systemInfoFragment" />
+        <action
+            android:id="@+id/action_nav_dashboard_to_fragmentDemoFragment"
+            app:destination="@id/fragmentDemoFragment" />
+        <action
+            android:id="@+id/action_nav_dashboard_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.example.fragmentsdemo.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_nav_settings_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/systemInfoFragment"
+        android:name="com.example.fragmentsdemo.SystemInfoFragment"
+        android:label="System Information"
+        tools:layout="@layout/fragment_system_info" />
+
+    <fragment
+        android:id="@+id/fragmentDemoFragment"
+        android:name="com.example.fragmentsdemo.FragmentDemoFragment"
+        android:label="Fragment Demo"
+        tools:layout="@layout/fragment_fragment_demo" />
+</navigation>
