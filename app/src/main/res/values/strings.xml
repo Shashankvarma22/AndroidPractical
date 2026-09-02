@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Phone Book</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_phone">Phone Number</string>
+    <string name="dialog_title_add">Add Contact</string>
+    <string name="dialog_title_edit">Edit Contact</string>
+    <string name="dialog_title_delete">Delete Contact</string>
+    <string name="dialog_message_delete">Are you sure you want to delete this contact?</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_delete">Delete</string>
+    <string name="error_empty_fields">Fields cannot be empty</string>
+    <string name="desc_add">Add Contact</string>
+    <string name="desc_edit">Edit</string>
+    <string name="desc_delete">Delete</string>
+    <string name="action_export">Export to File</string>
+    <string name="action_import">Import from File</string>
+    <string name="action_saf_export">SAF Export</string>
+    <string name="action_saf_import">SAF Import</string>
+    <string name="msg_exported">Contacts exported to phonebook.json</string>
+    <string name="msg_imported">Contacts imported from phonebook.json</string>
+    <string name="msg_saf_exported">Contacts exported successfully</string>
+    <string name="msg_saf_imported">Contacts imported successfully</string>
+    <string name="error_file_not_found">phonebook.json not found</string>
+    <string name="error_export_failed">Export failed</string>
+    <string name="error_import_failed">Import failed</string>
+</resources>
