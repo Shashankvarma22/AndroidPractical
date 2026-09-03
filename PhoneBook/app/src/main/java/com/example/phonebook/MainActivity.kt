@@ -53,6 +53,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         
         setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
         setupWindowInsets()
         loadContacts()
         setupRecyclerView()

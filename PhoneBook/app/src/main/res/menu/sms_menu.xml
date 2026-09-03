@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_sms_export"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/action_sms_export"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_sms_import"
+        android:icon="@android:drawable/ic_menu_revert"
+        android:title="@string/action_sms_import"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_sms_saf_export"
+        android:title="@string/action_sms_saf_export"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_sms_saf_import"
+        android:title="@string/action_sms_saf_import"
+        app:showAsAction="never" />
+</menu>

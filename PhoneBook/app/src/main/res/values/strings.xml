@@ -24,4 +24,28 @@
     <string name="error_file_not_found">phonebook.json not found</string>
     <string name="error_export_failed">Export failed</string>
     <string name="error_import_failed">Import failed</string>
+    <string name="title_home">Main Menu</string>
+    <string name="btn_phone_book">Phone Book</string>
+    <string name="btn_sms">SMS</string>
+    <string name="btn_export_import">Export / Import</string>
+
+    <string name="action_sms_export">Export SMS to File</string>
+    <string name="action_sms_import">Import SMS from File</string>
+    <string name="action_sms_saf_export">SAF SMS Export</string>
+    <string name="action_sms_saf_import">SAF SMS Import</string>
+    <string name="msg_sms_exported">SMS exported to sms_backup.json</string>
+    <string name="msg_sms_imported">SMS imported from sms_backup.json</string>
+    <string name="msg_sms_saf_exported">SMS exported successfully</string>
+    <string name="msg_sms_saf_imported">SMS imported successfully</string>
+    <string name="error_sms_file_not_found">sms_backup.json not found</string>
+    <string name="title_export_import">Export / Import</string>
+    <string name="btn_export_phone">Export Phone Contacts</string>
+    <string name="btn_export_sms">Export Device SMS</string>
+    <string name="btn_import_phone">Import Phone Contacts</string>
+    <string name="btn_import_sms">Import Device SMS</string>
+    <string name="msg_contacts_exported">Device contacts exported</string>
+    <string name="msg_sms_exported_device">Device SMS exported</string>
+    <string name="msg_contacts_imported">Contacts imported to device</string>
+    <string name="msg_sms_imported_device">SMS imported to device</string>
+    <string name="error_permission_denied">Permission denied</string>
 </resources>
