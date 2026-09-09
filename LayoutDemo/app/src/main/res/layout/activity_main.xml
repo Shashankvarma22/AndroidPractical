@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
+    tools:context=".MainActivity">
+
+    <!-- RadioButtons, CheckBoxes and Spinner -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <!-- Column 1: RadioButtons and Spinner -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <RadioGroup
+                android:id="@+id/radioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/radioOne"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Table view"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioTwo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Grid view"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioThree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Scroll view &amp; card view"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioFour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recycler view"
+                    android:textSize="18sp" />
+
+            </RadioGroup>
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+
+        </LinearLayout>
+
+        <!-- Column 2: CheckBoxes -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="24dp"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/checkOne"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Table view"
+                android:textSize="18sp" />
+
+            <CheckBox
+                android:id="@+id/checkTwo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Grid view"
+                android:textSize="18sp" />
+
+            <CheckBox
+                android:id="@+id/checkThree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scroll view &amp; card view"
+                android:textSize="18sp" />
+
+            <CheckBox
+                android:id="@+id/checkFour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recycler view"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Movie display area -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>
