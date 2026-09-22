@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -275,8 +277,59 @@ class SmsActivity : AppCompatActivity() {
 
     private fun showNewSmsDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sms, null)
-        val editPhone = dialogView.findViewById<EditText>(R.id.editSmsPhone)
+        val editPhone = dialogView.findViewById<AutoCompleteTextView>(R.id.editSmsPhone)
         val editMessage = dialogView.findViewById<EditText>(R.id.editSmsMessage)
+
+        // Query PhoneBookProvider via ContentResolver for contact suggestions
+        val contactDisplayList = mutableListOf<String>()
+        val contactNumberMap = mutableMapOf<String, String>()
+
+        try {
+            contentResolver.query(
+                ContactLookup.CONTENT_URI,
+                arrayOf("name", "number"),
+                null,
+                null,
+                null
+            )?.use { cursor ->
+                val nameIdx = cursor.getColumnIndex("name")
+                val numberIdx = cursor.getColumnIndex("number")
+
+                while (cursor.moveToNext()) {
+                    val name = if (nameIdx != -1 && !cursor.isNull(nameIdx)) cursor.getString(nameIdx) else ""
+                    val number = if (numberIdx != -1 && !cursor.isNull(numberIdx)) cursor.getString(numberIdx) else ""
+
+                    if (number.isNotBlank()) {
+                        val display = if (name.isNotBlank()) "$name ($number)" else number
+                        contactDisplayList.add(display)
+                        contactNumberMap[display] = number
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("SmsActivity", "Failed to query contacts for SMS dropdown", e)
+        }
+
+        if (contactDisplayList.isNotEmpty()) {
+            val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, contactDisplayList)
+            editPhone.setAdapter(adapter)
+            editPhone.threshold = 0
+            editPhone.setOnClickListener {
+                editPhone.showDropDown()
+            }
+            editPhone.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    editPhone.showDropDown()
+                }
+            }
+            editPhone.setOnItemClickListener { parent, _, position, _ ->
+                val selectedDisplay = parent.getItemAtPosition(position).toString()
+                val selectedNumber = contactNumberMap[selectedDisplay]
+                    ?: selectedDisplay.substringAfterLast("(").substringBefore(")").trim()
+                editPhone.setText(selectedNumber)
+                editPhone.setSelection(selectedNumber.length)
+            }
+        }
 
         AlertDialog.Builder(this)
             .setTitle("New SMS")
