@@ -8,5 +8,8 @@ data class Sms(
     val seen: Int = 0,
     val type: Int = 0,
     val dateSent: Long = 0,
-    val status: Int = -1
+    val status: Int = -1,
+    val contactId: Long? = null,
+    val contactName: String? = null,
+    val id: Long = -1
 )

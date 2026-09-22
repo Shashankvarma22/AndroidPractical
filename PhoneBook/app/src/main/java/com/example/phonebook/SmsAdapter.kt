@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 
 class SmsAdapter(
     private val smsList: List<Sms>,
-    private val onEditClick: (Int) -> Unit,
+    private val onItemClick: (Int) -> Unit,
     private val onDeleteClick: (Int) -> Unit
 ) : RecyclerView.Adapter<SmsAdapter.SmsViewHolder>() {
 
     class SmsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textRecipient: TextView = view.findViewById(R.id.textRecipient)
         val textMessage: TextView = view.findViewById(R.id.textMessage)
-        val btnEdit: ImageButton = view.findViewById(R.id.btnEditSms)
         val btnDelete: ImageButton = view.findViewById(R.id.btnDeleteSms)
     }
 
@@ -27,9 +26,10 @@ class SmsAdapter(
 
     override fun onBindViewHolder(holder: SmsViewHolder, position: Int) {
         val sms = smsList[position]
-        holder.textRecipient.text = sms.phoneNumber
+        holder.textRecipient.text = sms.contactName ?: sms.phoneNumber
         holder.textMessage.text = sms.message
-        holder.btnEdit.setOnClickListener { onEditClick(position) }
+        
+        holder.itemView.setOnClickListener { onItemClick(position) }
         holder.btnDelete.setOnClickListener { onDeleteClick(position) }
     }
 

@@ -139,7 +139,7 @@ class ExportImportActivity : AppCompatActivity() {
             val nameIdx = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
             val numberIdx = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
             while (it.moveToNext()) {
-                contacts.add(Contact(it.getString(nameIdx), it.getString(numberIdx)))
+                contacts.add(Contact(name = it.getString(nameIdx), numbers = listOf(it.getString(numberIdx))))
             }
         }
         writeJsonToUri(uri, contacts, R.string.msg_contacts_exported)

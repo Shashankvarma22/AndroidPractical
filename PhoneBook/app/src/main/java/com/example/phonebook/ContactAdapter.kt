@@ -29,7 +29,13 @@ class ContactAdapter(
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
         val contact = contacts[position]
         holder.textName.text = contact.name
-        holder.textPhone.text = contact.phoneNumber
+        
+        // Display multiple numbers comma-separated
+        holder.textPhone.text = if (contact.numbers.isNotEmpty()) {
+            contact.numbers.joinToString(", ")
+        } else {
+            contact.phoneNumber // Fallback
+        }
         
         holder.buttonEdit.setOnClickListener {
             onEditClick(holder.bindingAdapterPosition)

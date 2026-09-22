@@ -6,7 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private val contacts = mutableListOf<Contact>()
     private val gson = Gson()
     private val prefs by lazy { getSharedPreferences("phonebook_prefs", MODE_PRIVATE) }
+    private val dbHelper by lazy { DatabaseHelper(this) }
 
     // SAF Export Launcher
     private val safExportLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -58,11 +62,47 @@ class MainActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         setupWindowInsets()
+        migrateDataIfNeeded()
         loadContacts()
         setupRecyclerView()
 
         findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
             showContactDialog(null)
+        }
+    }
+
+    private fun migrateDataIfNeeded() {
+        if (prefs.getBoolean("db_migrated", false)) return
+
+        val json = prefs.getString("contacts_list", null)
+        if (json != null) {
+            try {
+                val type = object : TypeToken<List<Contact>>() {}.type
+                val oldContacts: List<Contact> = gson.fromJson(json, type)
+                
+                val db = dbHelper.writableDatabase
+                db.beginTransaction()
+                try {
+                    for (oldContact in oldContacts) {
+                        val numbers = if (oldContact.numbers.isNotEmpty()) {
+                            oldContact.numbers
+                        } else if (oldContact.phoneNumber.isNotEmpty()) {
+                            listOf(oldContact.phoneNumber)
+                        } else {
+                            emptyList()
+                        }
+                        dbHelper.insertContact(oldContact.name, numbers)
+                    }
+                    db.setTransactionSuccessful()
+                    prefs.edit().putBoolean("db_migrated", true).apply()
+                } finally {
+                    db.endTransaction()
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("MainActivity", "Migration failed", e)
+            }
+        } else {
+            prefs.edit().putBoolean("db_migrated", true).apply()
         }
     }
 
@@ -111,24 +151,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadContacts() {
-        val json = prefs.getString("contacts_list", null)
-        if (json != null) {
-            val type = object : TypeToken<List<Contact>>() {}.type
-            val savedContacts: List<Contact> = gson.fromJson(json, type)
+        contacts.clear()
+        contacts.addAll(dbHelper.getAllContacts())
+        if (contacts.isEmpty() && !prefs.getBoolean("db_migrated", false)) {
+            // If DB is empty and not migrated, we might be on a clean install with defaults
+            val defaults = listOf(
+                Contact(name = "John Doe", numbers = listOf("123-456-7890")),
+                Contact(name = "Jane Smith", numbers = listOf("987-654-3210")),
+                Contact(name = "Bob Johnson", numbers = listOf("555-123-4567"))
+            )
+            // Save defaults to DB
+            for (c in defaults) {
+                dbHelper.insertContact(c.name, c.numbers)
+            }
+            // Reload to get real IDs
             contacts.clear()
-            contacts.addAll(savedContacts)
-        } else {
-            contacts.addAll(listOf(
-                Contact("John Doe", "123-456-7890"),
-                Contact("Jane Smith", "987-654-3210"),
-                Contact("Bob Johnson", "555-123-4567")
-            ))
+            contacts.addAll(dbHelper.getAllContacts())
+        }
+        if (::adapter.isInitialized) {
+            adapter.notifyDataSetChanged()
         }
     }
 
-    private fun saveContacts() {
-        prefs.edit().putString("contacts_list", gson.toJson(contacts)).apply()
-    }
+
 
     // --- Original App-Specific Export/Import ---
 
@@ -204,10 +249,28 @@ class MainActivity : AppCompatActivity() {
     private fun updateContactsList(json: String) {
         val type = object : TypeToken<List<Contact>>() {}.type
         val importedContacts: List<Contact> = gson.fromJson(json, type)
-        contacts.clear()
-        contacts.addAll(importedContacts)
-        adapter.notifyDataSetChanged()
-        saveContacts()
+        
+        val db = dbHelper.writableDatabase
+        db.beginTransaction()
+        try {
+            // For a simple backup import, we clear existing contacts and insert new ones
+            db.delete(DatabaseHelper.TABLE_CONTACTS, null, null)
+            for (contact in importedContacts) {
+                val numbers = if (contact.numbers.isNotEmpty()) {
+                    contact.numbers
+                } else if (contact.phoneNumber.isNotEmpty()) {
+                    listOf(contact.phoneNumber)
+                } else {
+                    emptyList()
+                }
+                dbHelper.insertContact(contact.name, numbers)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+        
+        loadContacts()
     }
 
     // --- CRUD Dialogs ---
@@ -215,12 +278,45 @@ class MainActivity : AppCompatActivity() {
     private fun showContactDialog(position: Int?) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_contact, null)
         val editName = dialogView.findViewById<EditText>(R.id.editName)
-        val editPhone = dialogView.findViewById<EditText>(R.id.editPhone)
+        val phoneContainer = dialogView.findViewById<LinearLayout>(R.id.phoneContainer)
+        val btnAddPhone = dialogView.findViewById<Button>(R.id.btnAddPhoneField)
 
-        position?.let {
-            val contact = contacts[it]
-            editName.setText(contact.name)
-            editPhone.setText(contact.phoneNumber)
+        val phoneFieldViews = mutableListOf<View>()
+
+        fun addPhoneField(number: String = "") {
+            val fieldView = LayoutInflater.from(this).inflate(R.layout.item_phone_field, phoneContainer, false)
+            val editPhone = fieldView.findViewById<EditText>(R.id.editPhone)
+            val btnRemove = fieldView.findViewById<View>(R.id.btnRemovePhone)
+            
+            editPhone.setText(number)
+            
+            btnRemove.setOnClickListener {
+                if (phoneFieldViews.size > 1) {
+                    phoneContainer.removeView(fieldView)
+                    phoneFieldViews.remove(fieldView)
+                } else {
+                    Toast.makeText(this, "At least one number is required", Toast.LENGTH_SHORT).show()
+                }
+            }
+            
+            phoneContainer.addView(fieldView)
+            phoneFieldViews.add(fieldView)
+        }
+
+        val existingContact = position?.let { contacts[it] }
+        if (existingContact != null) {
+            editName.setText(existingContact.name)
+            if (existingContact.numbers.isNotEmpty()) {
+                existingContact.numbers.forEach { addPhoneField(it) }
+            } else {
+                addPhoneField(existingContact.phoneNumber)
+            }
+        } else {
+            addPhoneField()
+        }
+
+        btnAddPhone.setOnClickListener {
+            addPhoneField()
         }
 
         AlertDialog.Builder(this)
@@ -228,19 +324,19 @@ class MainActivity : AppCompatActivity() {
             .setView(dialogView)
             .setPositiveButton(R.string.btn_save) { _, _ ->
                 val name = editName.text.toString().trim()
-                val phone = editPhone.text.toString().trim()
+                val numbers = phoneFieldViews.map { 
+                    it.findViewById<EditText>(R.id.editPhone).text.toString().trim() 
+                }.filter { it.isNotEmpty() }
 
-                if (name.isNotEmpty() && phone.isNotEmpty()) {
-                    if (position != null) {
-                        contacts[position] = Contact(name, phone)
-                        adapter.notifyItemChanged(position)
+                if (name.isNotEmpty() && numbers.isNotEmpty()) {
+                    if (existingContact != null) {
+                        dbHelper.updateContact(existingContact.id, name, numbers)
                     } else {
-                        contacts.add(Contact(name, phone))
-                        adapter.notifyItemInserted(contacts.size - 1)
+                        dbHelper.insertContact(name, numbers)
                     }
-                    saveContacts()
+                    loadContacts()
                 } else {
-                    Toast.makeText(this, R.string.error_empty_fields, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Name and at least one number required", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton(R.string.btn_cancel, null)
@@ -252,9 +348,9 @@ class MainActivity : AppCompatActivity() {
             .setTitle(R.string.dialog_title_delete)
             .setMessage(R.string.dialog_message_delete)
             .setPositiveButton(R.string.btn_delete) { _, _ ->
-                contacts.removeAt(position)
-                adapter.notifyItemRemoved(position)
-                saveContacts()
+                val contact = contacts[position]
+                dbHelper.deleteContact(contact.id)
+                loadContacts()
             }
             .setNegativeButton(R.string.btn_cancel, null)
             .show()

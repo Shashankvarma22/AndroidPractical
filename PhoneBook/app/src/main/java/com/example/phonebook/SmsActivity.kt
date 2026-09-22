@@ -28,6 +28,7 @@ class SmsActivity : AppCompatActivity() {
     private val smsList = mutableListOf<Sms>()
     private val gson = Gson()
     private val prefs by lazy { getSharedPreferences("sms_prefs", MODE_PRIVATE) }
+    private val dbHelper by lazy { DatabaseHelper(this) }
 
     // SAF Export Launcher
     private val safExportLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -64,11 +65,45 @@ class SmsActivity : AppCompatActivity() {
             insets
         }
 
+        migrateSmsIfNeeded()
         loadSms()
         setupRecyclerView()
 
         findViewById<FloatingActionButton>(R.id.fabAddSms).setOnClickListener {
-            showSmsDialog(null)
+            showNewSmsDialog()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadSms()
+    }
+
+    private fun migrateSmsIfNeeded() {
+        if (prefs.getBoolean("sms_db_migrated", false)) return
+
+        val json = prefs.getString("sms_list", null)
+        if (json != null) {
+            try {
+                val type = object : TypeToken<List<Sms>>() {}.type
+                val oldSmsList: List<Sms> = gson.fromJson(json, type)
+                
+                val db = dbHelper.writableDatabase
+                db.beginTransaction()
+                try {
+                    for (oldSms in oldSmsList) {
+                        dbHelper.insertSms(oldSms)
+                    }
+                    db.setTransactionSuccessful()
+                    prefs.edit().putBoolean("sms_db_migrated", true).apply()
+                } finally {
+                    db.endTransaction()
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("SmsActivity", "SMS Migration failed", e)
+            }
+        } else {
+            prefs.edit().putBoolean("sms_db_migrated", true).apply()
         }
     }
 
@@ -102,37 +137,56 @@ class SmsActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         adapter = SmsAdapter(
             smsList,
-            onEditClick = { position -> showSmsDialog(position) },
+            onItemClick = { position ->
+                val sms = smsList[position]
+                val intent = Intent(this, ConversationActivity::class.java).apply {
+                    putExtra("address", sms.phoneNumber)
+                    putExtra("contactName", sms.contactName)
+                }
+                startActivity(intent)
+            },
             onDeleteClick = { position -> showDeleteConfirmation(position) }
         )
         findViewById<RecyclerView>(R.id.recyclerViewSms).adapter = adapter
     }
 
     private fun loadSms() {
-        val json = prefs.getString("sms_list", null)
-        if (json != null) {
-            val type = object : TypeToken<List<Sms>>() {}.type
-            val savedSms: List<Sms> = gson.fromJson(json, type)
+        smsList.clear()
+        val rawThreads = dbHelper.getConversationThreads()
+        val resolvedThreads = rawThreads.map { sms ->
+            val resolvedName = ContactLookup.getContactName(this, sms.phoneNumber)
+            sms.copy(contactName = resolvedName)
+        }
+        smsList.addAll(resolvedThreads)
+        if (smsList.isEmpty() && !prefs.getBoolean("sms_db_migrated", false)) {
+            val defaults = listOf(
+                Sms("123456", "Hello from SMS Manager!", date = System.currentTimeMillis(), type = 1),
+                Sms("987654", "This is a test message.", date = System.currentTimeMillis(), type = 1)
+            )
+            for (sms in defaults) {
+                dbHelper.insertSms(sms)
+            }
             smsList.clear()
-            smsList.addAll(savedSms)
-        } else {
-            smsList.addAll(listOf(
-                Sms("123456", "Hello from SMS Manager!"),
-                Sms("987654", "This is a test message.")
-            ))
+            val reloadedThreads = dbHelper.getConversationThreads().map { sms ->
+                val resolvedName = ContactLookup.getContactName(this, sms.phoneNumber)
+                sms.copy(contactName = resolvedName)
+            }
+            smsList.addAll(reloadedThreads)
+        }
+        if (::adapter.isInitialized) {
+            adapter.notifyDataSetChanged()
         }
     }
 
-    private fun saveSms() {
-        prefs.edit().putString("sms_list", gson.toJson(smsList)).apply()
-    }
+
 
     // --- Original App-Specific Export/Import ---
 
     private fun exportSmsToFile() {
         try {
+            val allSms = dbHelper.getAllSms()
             val file = File(getExternalFilesDir(null), "sms_backup.json")
-            file.writeText(gson.toJson(smsList))
+            file.writeText(gson.toJson(allSms))
             Toast.makeText(this, R.string.msg_sms_exported, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(this, R.string.error_export_failed, Toast.LENGTH_SHORT).show()
@@ -175,8 +229,9 @@ class SmsActivity : AppCompatActivity() {
 
     private fun writeJsonToUri(uri: Uri) {
         try {
+            val allSms = dbHelper.getAllSms()
             contentResolver.openOutputStream(uri)?.use { outputStream ->
-                outputStream.write(gson.toJson(smsList).toByteArray())
+                outputStream.write(gson.toJson(allSms).toByteArray())
             }
             Toast.makeText(this, R.string.msg_sms_saf_exported, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
@@ -201,41 +256,38 @@ class SmsActivity : AppCompatActivity() {
     private fun updateSmsList(json: String) {
         val type = object : TypeToken<List<Sms>>() {}.type
         val importedSms: List<Sms> = gson.fromJson(json, type)
-        smsList.clear()
-        smsList.addAll(importedSms)
-        adapter.notifyDataSetChanged()
-        saveSms()
+        
+        val db = dbHelper.writableDatabase
+        db.beginTransaction()
+        try {
+            db.delete(DatabaseHelper.TABLE_MESSAGES, null, null)
+            for (sms in importedSms) {
+                dbHelper.insertSms(sms)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+        loadSms()
     }
 
     // --- CRUD Dialogs ---
 
-    private fun showSmsDialog(position: Int?) {
+    private fun showNewSmsDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sms, null)
         val editPhone = dialogView.findViewById<EditText>(R.id.editSmsPhone)
         val editMessage = dialogView.findViewById<EditText>(R.id.editSmsMessage)
 
-        position?.let {
-            val sms = smsList[it]
-            editPhone.setText(sms.phoneNumber)
-            editMessage.setText(sms.message)
-        }
-
         AlertDialog.Builder(this)
-            .setTitle(if (position == null) "New SMS" else "Edit SMS")
+            .setTitle("New SMS")
             .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton("Send") { _, _ ->
                 val phone = editPhone.text.toString().trim()
                 val message = editMessage.text.toString().trim()
 
                 if (phone.isNotEmpty() && message.isNotEmpty()) {
-                    if (position != null) {
-                        smsList[position] = Sms(phone, message)
-                        adapter.notifyItemChanged(position)
-                    } else {
-                        smsList.add(Sms(phone, message))
-                        adapter.notifyItemInserted(smsList.size - 1)
-                    }
-                    saveSms()
+                    dbHelper.insertSms(Sms(phoneNumber = phone, message = message, date = System.currentTimeMillis(), type = 2))
+                    loadSms()
                 } else {
                     Toast.makeText(this, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
                 }
@@ -245,13 +297,13 @@ class SmsActivity : AppCompatActivity() {
     }
 
     private fun showDeleteConfirmation(position: Int) {
+        val sms = smsList[position]
         AlertDialog.Builder(this)
-            .setTitle("Delete SMS")
-            .setMessage("Are you sure you want to delete this SMS?")
+            .setTitle("Delete Conversation")
+            .setMessage("Are you sure you want to delete all messages with ${sms.contactName ?: sms.phoneNumber}?")
             .setPositiveButton("Delete") { _, _ ->
-                smsList.removeAt(position)
-                adapter.notifyItemRemoved(position)
-                saveSms()
+                dbHelper.deleteConversation(sms.phoneNumber)
+                loadSms()
             }
             .setNegativeButton("Cancel", null)
             .show()

@@ -1,66 +1,695 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/calc_body_bg"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:background="#D3D3D3"
+    android:padding="6dp"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tvDisplay"
+    <!-- TEXTBOX WITH PADDING (LCD DISPLAY) -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="90dp"
         android:layout_marginBottom="8dp"
         android:background="@color/calc_display_bg"
-        android:gravity="bottom|end"
-        android:padding="12dp"
-        android:text="0"
-        android:textColor="#00FF00"
-        android:textSize="48sp"
-        android:fontFamily="monospace" />
+        android:elevation="4dp"
+        android:gravity="center"
+        android:padding="12dp">
 
-    <GridLayout
+        <TextView
+            android:id="@+id/tvDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="monospace"
+            android:gravity="bottom|end"
+            android:text="@string/display_initial"
+            android:textColor="@color/calc_text_lcd"
+            android:textSize="54sp" />
+    </LinearLayout>
+
+    <!-- BUTTONS AND SLIDERS (LINEAR LAYOUT - HORIZONTAL) -->
+    <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="4dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:orientation="vertical"
+            android:paddingStart="2dp"
+            android:paddingEnd="0dp"
+            tools:ignore="RtlSymmetry">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/logo_text"
+                android:textColor="@color/black"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                tools:ignore="SmallSp" />
+
+            <Button
+                android:id="@+id/btnChange"
+                style="@style/TealButton"
+                android:layout_width="55dp"
+                android:layout_height="24dp"
+                android:text="@string/btn_change"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_decimal"
+                android:textSize="8sp"
+                tools:ignore="SmallSp" />
+
+            <SeekBar
+                android:id="@+id/sbDecimal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="6"
+                android:progress="6"
+                android:thumbTint="@color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_gt_set"
+                android:textSize="8sp"
+                tools:ignore="SmallSp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/swGTSet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX="0.7"
+                android:scaleY="0.7"
+                android:thumbTint="@color/black"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_rounding"
+                android:textSize="8sp"
+                tools:ignore="SmallSp" />
+
+            <SeekBar
+                android:id="@+id/sbRounding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="2"
+                android:progress="1"
+                android:thumbTint="@color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_power"
+                android:textSize="8sp"
+                tools:ignore="SmallSp" />
+
+            <SeekBar
+                android:id="@+id/sbPower"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="3"
+                android:progress="3"
+                android:thumbTint="@color/black" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- UPPER FUNCTION SHELF: GROUPED (LINEAR LAYOUT - HORIZONTAL) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginBottom="8dp"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="2dp">
+
+        <!-- Group 1: Standalone Arrow Button -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnPaperFeed"
+                style="@style/GreyButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:text="@string/btn_paper_feed"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+
+        <!-- Large Gap after Arrow -->
+        <View
+            android:layout_width="24dp"
+            android:layout_height="match_parent" />
+
+        <!-- Group 2: Business Logic (COST, SELL, MGN) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnCost"
+                style="@style/GreyButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:text="@string/btn_cost"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnSell"
+                style="@style/GreyButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:text="@string/btn_sell"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnMgn"
+                style="@style/GreyButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:text="@string/btn_mgn"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+
+        <!-- Large Gap after MGN -->
+        <View
+            android:layout_width="24dp"
+            android:layout_height="match_parent" />
+
+        <!-- Group 3: Secondary Functions (+/-, AVG, GT) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnPlusMinus"
+                style="@style/GreyButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:text="@string/btn_plus_minus"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnAvg"
+                style="@style/GreyButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:text="@string/btn_avg"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnGT"
+                style="@style/BlueButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:text="@string/btn_gt"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+
+        <!-- Large Gap after GT -->
+        <View
+            android:layout_width="24dp"
+            android:layout_height="match_parent" />
+
+        <!-- Group 4: Tax Controls (TAX+, TAX-) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnTaxPlus"
+                style="@style/OrangeButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:text="@string/btn_tax_plus"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnTaxMinus"
+                style="@style/OrangeButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:text="@string/btn_tax_minus"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- LOWER KEYPAD MAIN CONTAINER (LINEAR LAYOUT - HORIZONTAL) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:padding="4dp">
+
+        <!-- LEFT COMPOUND BLOCK -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:orientation="vertical">
+
+            <!-- Top Row: Left Operators + Numeric Grid -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <!-- Left operators vertical stack (Aligns with Rows 1, 2, 3) -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btnDiv"
+                        style="@style/GreyButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1"
+                        android:text="@string/btn_div"
+                        android:textSize="18sp"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <Button
+                        android:id="@+id/btnEqual"
+                        style="@style/GreyButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1"
+                        android:text="@string/btn_equal"
+                        android:textSize="18sp"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <Button
+                        android:id="@+id/btnMul"
+                        style="@style/GreyButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1"
+                        android:text="@string/btn_mul"
+                        android:textSize="18sp"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </LinearLayout>
+
+                <!-- EXPLICIT GAP BETWEEN OPERATORS AND NUMBERS -->
+                <View
+                    android:layout_width="12dp"
+                    android:layout_height="match_parent" />
+
+                <!-- Numeric Keypad 3x3 Grid (Rows 1, 2, 3) -->
+                <GridLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:columnCount="3"
+                    android:rowCount="3">
+
+                    <Button
+                        android:id="@+id/btn7"
+                        style="@style/KeypadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_columnWeight="1"
+                        android:layout_gravity="fill"
+                        android:layout_margin="2dp"
+                        android:layout_rowWeight="1"
+                        android:text="@string/digit_7"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <Button
+                        android:id="@+id/btn8"
+                        style="@style/KeypadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_columnWeight="1"
+                        android:layout_gravity="fill"
+                        android:layout_margin="2dp"
+                        android:layout_rowWeight="1"
+                        android:text="@string/digit_8"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <Button
+                        android:id="@+id/btn9"
+                        style="@style/KeypadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_columnWeight="1"
+                        android:layout_gravity="fill"
+                        android:layout_margin="2dp"
+                        android:layout_rowWeight="1"
+                        android:text="@string/digit_9"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <Button
+                        android:id="@+id/btn4"
+                        style="@style/KeypadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_columnWeight="1"
+                        android:layout_gravity="fill"
+                        android:layout_margin="2dp"
+                        android:layout_rowWeight="1"
+                        android:text="@string/digit_4"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <Button
+                        android:id="@+id/btn5"
+                        style="@style/KeypadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_columnWeight="1"
+                        android:layout_gravity="fill"
+                        android:layout_margin="2dp"
+                        android:layout_rowWeight="1"
+                        android:text="@string/digit_5"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <Button
+                        android:id="@+id/btn6"
+                        style="@style/KeypadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_columnWeight="1"
+                        android:layout_gravity="fill"
+                        android:layout_margin="2dp"
+                        android:layout_rowWeight="1"
+                        android:text="@string/digit_6"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <Button
+                        android:id="@+id/btn1"
+                        style="@style/KeypadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_columnWeight="1"
+                        android:layout_gravity="fill"
+                        android:layout_margin="2dp"
+                        android:layout_rowWeight="1"
+                        android:text="@string/digit_1"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <Button
+                        android:id="@+id/btn2"
+                        style="@style/KeypadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_columnWeight="1"
+                        android:layout_gravity="fill"
+                        android:layout_margin="2dp"
+                        android:layout_rowWeight="1"
+                        android:text="@string/digit_2"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <Button
+                        android:id="@+id/btn3"
+                        style="@style/KeypadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_columnWeight="1"
+                        android:layout_gravity="fill"
+                        android:layout_margin="2dp"
+                        android:layout_rowWeight="1"
+                        android:text="@string/digit_3"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </GridLayout>
+
+            </LinearLayout>
+
+            <!-- Bottom row: C/CE | 0 | 00 | Dot (Row 4) -->
+            <!-- COMPLETELY INDEPENDENT bottom row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <Button
+                    android:id="@+id/btnC"
+                    style="@style/KeypadButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_margin="2dp"
+                    android:text="@string/btn_c"
+                    android:textSize="11sp"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <Button
+                    android:id="@+id/btn0"
+                    style="@style/KeypadButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:layout_margin="2dp"
+                    android:text="@string/digit_0"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <Button
+                    android:id="@+id/btn00"
+                    style="@style/KeypadButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_margin="2dp"
+                    android:text="@string/digit_00"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <Button
+                    android:id="@+id/btnDot"
+                    style="@style/KeypadButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:layout_margin="2dp"
+                    android:text="@string/dot"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Fixed Spacer between Left Compound Block and Arithmetic Column -->
+        <View
+            android:layout_width="12dp"
+            android:layout_height="match_parent" />
+
+        <!-- Arithmetic Column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnSub"
+                style="@style/RedButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="@string/btn_sub"
+                android:textSize="22sp"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnAdd"
+                style="@style/GreyButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="2dp"
+                android:layout_weight="3"
+                android:text="@string/btn_add"
+                android:textSize="22sp"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+
+        <!-- Fixed Spacer between Arithmetic Column and Function Column -->
+        <View
+            android:layout_width="12dp"
+            android:layout_height="match_parent" />
+
+        <!-- Function Column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnPercent"
+                style="@style/GreyButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="@string/btn_percent"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnSubtotal"
+                style="@style/GreyButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="@string/btn_subtotal"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnTotal"
+                style="@style/GreyButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="2dp"
+                android:layout_weight="2"
+                android:text="@string/btn_total"
+                android:textSize="20sp"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+
+        <!-- Fixed Spacer between Function Column and Memory Column -->
+        <View
+            android:layout_width="12dp"
+            android:layout_height="match_parent" />
+
+        <!-- Memory Column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnMC"
+                style="@style/PurpleButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="@string/btn_mc"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnMR"
+                style="@style/PurpleButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="@string/btn_mr"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnMMinus"
+                style="@style/PurpleButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="@string/btn_m_minus"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnMPlus"
+                style="@style/PurpleButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="@string/btn_m_plus"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- HIDDEN LOGIC (Required for logic compliance) -->
+    <Button
+        android:id="@+id/btnReceipt"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:columnCount="4"
-        android:rowCount="5">
-
-        <!-- Row 0 -->
-        <Button android:id="@+id/btnC" android:text="C" style="@style/CalcButton" />
-        <Button android:id="@+id/btnBackspace" android:text="⌫" style="@style/CalcButton" />
-        <Button android:id="@+id/btnPercent" android:text="%" style="@style/CalcButton" />
-        <Button android:id="@+id/btnDiv" android:text="÷" style="@style/CalcButton" />
-
-        <!-- Row 1 -->
-        <Button android:id="@+id/btn7" android:text="7" style="@style/NumButton" />
-        <Button android:id="@+id/btn8" android:text="8" style="@style/NumButton" />
-        <Button android:id="@+id/btn9" android:text="9" style="@style/NumButton" />
-        <Button android:id="@+id/btnMul" android:text="×" style="@style/CalcButton" />
-
-        <!-- Row 2 -->
-        <Button android:id="@+id/btn4" android:text="4" style="@style/NumButton" />
-        <Button android:id="@+id/btn5" android:text="5" style="@style/NumButton" />
-        <Button android:id="@+id/btn6" android:text="6" style="@style/NumButton" />
-        <Button android:id="@+id/btnSub" android:text="−" android:backgroundTint="@color/calc_red" style="@style/CalcButton" />
-
-        <!-- Row 3 -->
-        <Button android:id="@+id/btn1" android:text="1" style="@style/NumButton" />
-        <Button android:id="@+id/btn2" android:text="2" style="@style/NumButton" />
-        <Button android:id="@+id/btn3" android:text="3" style="@style/NumButton" />
-        <Button android:id="@+id/btnAdd" android:text="+" style="@style/CalcButton" />
-
-        <!-- Row 4 -->
-        <Button android:id="@+id/btn0" android:text="0"
-            android:layout_columnSpan="2"
-            android:layout_gravity="fill"
-            style="@style/NumButton" />
-        <Button android:id="@+id/btnDot" android:text="." style="@style/NumButton" />
-        <Button android:id="@+id/btnEqual" android:text="=" style="@style/CalcButton" />
-
-    </GridLayout>
+        android:visibility="gone"
+        tools:ignore="TouchTargetSizeCheck" />
 
 </LinearLayout>

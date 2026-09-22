@@ -7,7 +7,20 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <!-- Custom PhoneBook Provider Permissions -->
+    <permission
+        android:name="com.example.phonebook.READ_PHONEBOOK"
+        android:label="Read PhoneBook contacts"
+        android:protectionLevel="normal" />
+    <permission
+        android:name="com.example.phonebook.WRITE_PHONEBOOK"
+        android:label="Write PhoneBook contacts"
+        android:protectionLevel="normal" />
+
+    <uses-permission android:name="com.example.phonebook.READ_PHONEBOOK" />
+    <uses-permission android:name="com.example.phonebook.WRITE_PHONEBOOK" />
+
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
 
     <application
@@ -42,9 +55,22 @@
         </activity>
 
         <activity
+            android:name=".ConversationActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
+
+        <activity
             android:name=".ExportImportActivity"
             android:exported="false">
         </activity>
+
+        <provider
+            android:name=".PhoneBookProvider"
+            android:authorities="com.example.phonebook.provider"
+            android:exported="true"
+            android:readPermission="com.example.phonebook.READ_PHONEBOOK"
+            android:writePermission="com.example.phonebook.WRITE_PHONEBOOK" />
 
         <!-- SMS Role Requirements -->
         <activity
