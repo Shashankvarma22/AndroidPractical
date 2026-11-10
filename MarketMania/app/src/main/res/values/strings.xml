@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MarketMania</string>
+    <string name="market_status">MARKET OPEN</string>
+    <string name="ws_status_connecting">WS: Connecting&#8230;</string>
+    <string name="ws_status_connected">WS: Connected</string>
+    <string name="ws_status_disconnected">WS: Disconnected</string>
+    <string name="timeframe_1d">1D</string>
+    <string name="timeframe_1w">1W</string>
+    <string name="timeframe_1m">1M</string>
+    <string name="watchlist_title">Watchlist</string>
+</resources>

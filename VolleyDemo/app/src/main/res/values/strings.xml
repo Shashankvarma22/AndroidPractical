@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">VolleyDemo</string>
+    <string name="hint_enter_movie">Enter movie name</string>
+    <string name="btn_search">Search</string>
+    <string name="btn_load_more">Load More</string>
+    <string name="btn_back">← Back to Results</string>
+    <string name="cd_movie_poster">Movie Poster</string>
+    <string name="label_results_count">Found %1$d results for "%2$s"</string>
+    <string name="label_year_type">Year: %1$s | Type: %2$s</string>
+    <string name="label_imdb_id">ID: %1$s</string>
+    <string name="label_year">Year: %1$s</string>
+    <string name="label_genre">Genre: %1$s</string>
+    <string name="label_imdb_rating">IMDb Rating: %1$s</string>
+    <string name="label_imdb_votes">IMDb Votes: %1$s</string>
+    <string name="label_director">Director: %1$s</string>
+    <string name="label_actors">Actors: %1$s</string>
+    <string name="label_plot">Plot</string>
+    <string name="placeholder_title">Movie Title</string>
+    <string name="placeholder_year">Year: N/A</string>
+    <string name="placeholder_imdb_id">ID: N/A</string>
+    <string name="placeholder_genre">Genre: N/A</string>
+    <string name="placeholder_rating">IMDb Rating: N/A</string>
+    <string name="placeholder_votes">IMDb Votes: N/A</string>
+    <string name="placeholder_director">Director: N/A</string>
+    <string name="placeholder_actors">Actors: N/A</string>
+    <string name="placeholder_plot">Movie plot details&#8230;</string>
+</resources>
